@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace parkolohaz_arpas
 {
@@ -27,14 +28,14 @@ namespace parkolohaz_arpas
 
             Console.WriteLine($"\n8. feladat: A(z) {emeletenkevesebbAuto(emeletek).Szint}. emeleten van a legkevesebb autó.");
 
-            foreach (var (a,b) in nincsAutoSzektorok(emeletek)) {  Console.WriteLine($"{a}. Emelet {b}. szektor"); }
+            foreach (var (a, b) in nincsAutoSzektorok(emeletek)) { Console.WriteLine($"{a}. Emelet {b}. szektor"); }
 
 
             Console.ReadKey();
         }
 
         static Emelet emeletenkevesebbAuto(List<Emelet> l) => l.MinBy(e => e.Szektorok.Sum());
-        static Dictionary<int,int> nincsAutoSzektorok(List<Emelet> l)
+        static Dictionary<int, int> nincsAutoSzektorok(List<Emelet> l)
         {
             Dictionary<int, int> dict = new Dictionary<int, int>();
             var emeletenNincsAuto = l.Where(e => e.Szektorok.Contains(0));
@@ -51,7 +52,16 @@ namespace parkolohaz_arpas
             }
 
             return dict;
+        }
+        static (int atlag, int atlagFeletti, int atlagAluli) AtlagtolElteres(List<Emelet> l)
+        {
+            var atlagosMennyiseg = Math.Round(l.Average(e => e.Szektorok.Average()), 2);
+
+            var (atlagE, atlagFelettiE, atlagAluliE) = (false, false, false);
+
+            atlag = l.Count(e => e.Szektorok.Where(e => e == atlagosMennyiseg));
             
+
         }
     }
 }
