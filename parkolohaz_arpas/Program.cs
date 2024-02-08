@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
+﻿using System.Linq;
 
 namespace parkolohaz_arpas
 {
@@ -28,8 +27,12 @@ namespace parkolohaz_arpas
 
             Console.WriteLine($"\n8. feladat: A(z) {emeletenkevesebbAuto(emeletek).Szint}. emeleten van a legkevesebb autó.");
 
-            foreach (var (a, b) in nincsAutoSzektorok(emeletek)) { Console.WriteLine($"{a}. Emelet {b}. szektor"); }
+            Console.WriteLine("\n9. feladat:");
+            foreach (var (emelet, szektor) in nincsAutoSzektorok(emeletek)) { Console.WriteLine($"{emelet}. Emelet {szektor}. szektor"); }
 
+            var (atlag,atlagFeletti,atlagAlatti) = AtlagtolElteres(emeletek);
+
+            Console.WriteLine($"\n10. feladat: {atlag} szektorban van átlagos mennyiségű, {atlagFeletti} szektorban átlag feletti mennyiségű, s {atlagAlatti} szektorban van átlag alatti mennyiségű autó");
 
             Console.ReadKey();
         }
@@ -53,15 +56,17 @@ namespace parkolohaz_arpas
 
             return dict;
         }
-        static (int atlag, int atlagFeletti, int atlagAluli) AtlagtolElteres(List<Emelet> l)
+        static (int atlag, int atlagFeletti, int atlagAlatti) AtlagtolElteres(List<Emelet> l)
         {
             var atlagosMennyiseg = Math.Round(l.Average(e => e.Szektorok.Average()), 2);
 
-            var (atlagE, atlagFelettiE, atlagAluliE) = (false, false, false);
+            var (atlag, atlagFeletti, atlagAlatti) = (0, 0, 0);
 
-            atlag = l.Count(e => e.Szektorok.Where(e => e == atlagosMennyiseg));
-            
+            atlag = l.Sum(e => e.Szektorok.Count(e => e == atlagosMennyiseg));
+            atlagFeletti = l.Sum(e => e.Szektorok.Count(e => e > atlagosMennyiseg));
+            atlagAlatti = l.Sum(e => e.Szektorok.Count(e => e < atlagosMennyiseg));
 
+            return (atlag, atlagFeletti, atlagAlatti);
         }
     }
 }
